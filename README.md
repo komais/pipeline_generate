@@ -71,4 +71,3 @@ optional arguments:
                         outdir
 
 author: Liu Tao
-mail:   taoliu@annoroad.com
