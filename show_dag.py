@@ -14,15 +14,16 @@ __mail__= 'taoliu@annoroad.com'
 pat1=re.compile('^\s+$')
 
 def draw_box(a_level_job , output):
-	contents = [''] * 7 
+	contents = [''] * 8 
 	for i , a_job in enumerate(a_level_job):
 		contents[0] += '-' * 25 + ' ' * 5 
 		contents[1] += '|'+ '{0:^23}'.format('Name:'+a_job.name) + '|' + ' ' * 5 
-		contents[2] += '|'+ '{0:^23}'.format( 'Major:'+ a_job.Major) + '|' + ' ' * 5 
+		contents[2] += '|'+ '{0:^23}'.format( 'Major:'+ str(a_job.Major)) + '|' + ' ' * 5 
 		contents[3] += '|'+ '{0:^23}'.format('CPU:'+a_job.CPU) + '|' + ' ' * 5 
 		contents[4] += '|'+ '{0:^23}'.format('Memory:'+ a_job.Memory) + '|' + ' ' * 5 
 		contents[5] += '|'+ '{0:^23}'.format('Thread:'+ str(a_job.Thread)) + '|' + ' ' * 5
-		contents[6] += '-' * 25 + ' ' * 5
+		contents[6] += '|'+ '{0:^23}'.format('Depend:'+ ";".join(a_job.Depend)) + '|' + ' ' * 5
+		contents[7] += '-' * 25 + ' ' * 5
 	for i in contents:
 		print(i)
 		output.write( i + '\n')

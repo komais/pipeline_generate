@@ -15,6 +15,14 @@
 1. 使用subprocess中的wait来阻塞进程，防止qstat无法响应的状态，并使用poll检查返回值
 2. 修复了failed状态又重新被修改成break的状态。
 3. 增加了状态返回值，如果全部运行完，则为exit(0),否则为exit(1)
+2016年3月30日
+1. 修改了du 无响应的返回值，返回为[]， 不退出程序
+2. 降低了qhost的频率
+3. 降低了qstat -j 的频率
+2016年7月14日：
+1. 修复了任务数太多，无法投递上去的bug。如果太多，会等待可以投递的时候再投递。
+2016年7月29日：
+1. 修复了qstat过多，对系统造成的负载。增加了qstat无响应，等待5min，重复10次；并且每次qstat后，sleep 5s，减少负载。
 '''
 import argparse
 import sys
@@ -27,6 +35,7 @@ import subprocess
 import random
 bindir = os.path.abspath(os.path.dirname(__file__))
 
+qhost_counter = 0 
 __author__='Liu Tao'
 __mail__= 'taoliu@annoroad.com'
 
@@ -43,18 +52,26 @@ def mylogger(script):
 	logger.addHandler(fh)
 	return logger
 
-def popen(cmd):
-	child = subprocess.Popen(cmd , shell=True , stdout = subprocess.PIPE)
-	child.wait()
-	if child.poll() == 0 :
-		return [i.decode() for i in child.stdout]
-	else:
-		print('{0} is error\n'.format(cmd))
-		debug_log.info('{0} is error\n'.format(cmd))
-		if cmd.find('du') > -1 :
-			return ['0']
+def popen(cmd , max_count = 10 ):
+	count = 0 
+	while count < max_count :
+		child = subprocess.Popen(cmd , shell=True , stdout = subprocess.PIPE)
+		child.wait()
+		if child.poll() == 0 :
+			return [i.decode() for i in child.stdout]
 		else:
-			sys.exit(1)
+			print('{0} is error\n'.format(cmd))
+			debug_log.info('{0} failed , repeat {1} time'.format(cmd , count ))
+			if cmd.find('du') > -1 :
+				return ['0']
+			else:
+				pass
+		count += 1 
+		time.sleep(300)
+	else :
+		debug_log.info('{0} is error\n'.format(cmd))
+		sys.exit(1)
+		
 
 class Job():
 	def __init__(self , script, key , name ,max_cycle ):
@@ -71,21 +88,31 @@ class Job():
 		self.vmem = []
 		self.maxvmem = 0 
 		self.node = 'unknown'
+		self.counter_qstat = 0 
 	def add_atribute(self, queue, max_cycle, resource):
 		self.queue = queue
 		self.max_cycle = max_cycle
 		self.resource = resource
-	def qsub(self):
+	def qsub(self, f_out):
+		count = 0 
 		cmd = 'cd {1} && qsub -cwd -S /bin/sh -q {0.queue} -l {0.resource} {0.script}'.format(self , os.path.abspath(os.path.dirname(self.script)))
-		#print(cmd)
-		qsub = "".join(popen(cmd))
-		if qsub.startswith('Your job'):
-			self.jobid = qsub.split()[2]
-			self.status = 'qsub'
-			self.time_qsub = time.time()
-			self.qsub_time += 1 
+		while count <= 10 : 
+			#print(cmd)
+			qsub = "".join(popen(cmd))
+			if qsub.startswith('Your job'):
+				self.jobid = qsub.split()[2]
+				self.status = 'qsub'
+				self.time_qsub = time.time()
+				self.qsub_time += 1
+				return 0 
+			elif qsub.startswith('Unable to run job'):
+				time.sleep(300)
+			else:
+				time.sleep(300)
+				count += 1
 		else:
-			pass
+			f_out.write("qsub failed:{0}\n".format(cmd))
+			sys.exit(1)
 	def qsub_to_run(self):
 		self.time_last = time.time()
 		self.status = 'running'
@@ -147,6 +174,9 @@ class Job():
 			self.maxvmem = current_maxvmem
 
 	def slow_node(self):
+		self.counter_qstat += 1 
+		if  self.counter_qstat > 1 and self.counter_qstat % 3 != 0 : 
+			return False
 		self.time_current = time.time()
 		self.qstat()
 		hold_time = int(self.qrls_time - self.qhold_time)
@@ -258,6 +288,9 @@ def is_dir_full(quota , dir):
 		return False
 
 def check_die_node():
+	global qhost_counter
+	qhost_counter += 1 
+	if qhost_counter > 1  and qhost_counter % 10 != 0 : return [] 
 	die_node = []
 	qhost = popen('qhost')
 	for i,j in enumerate(qhost):
@@ -283,6 +316,7 @@ def check_o_file(a_job):
 def check_running_job(all_job_list , bool_dir_full ):
 	die_node = check_die_node()
 	qstat = popen('qstat')
+	time.sleep(5)
 	running_stat = {}
 	node_dict = {}
 	for i,j  in enumerate(qstat):
@@ -411,14 +445,14 @@ def guard_objs(obj_dict , args ,logfile):
 				else:
 					if a_job.status == 'waiting':
 						debug_log.info('{0.name} {0.status}'.format(a_job))
-						a_job.qsub()
+						a_job.qsub(logfile)
 						debug_log.info('{0.name} {0.status}'.format(a_job))
 					if a_job.status == 'break':
 						with open(logfile, 'a') as f_out:
 							f_out.write('{0.name} is not finish , it is break down , '.format(a_job))
 							if not args.noreqsub:
 								if a_job.qsub_time < a_job.max_cycle:
-									a_job.qsub()
+									a_job.qsub(logfile)
 									f_out.write('reqsub it at the {0.qsub_time} time\n'.format(a_job))
 								else:
 									a_job.status = 'failed'

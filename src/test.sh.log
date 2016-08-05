@@ -1,0 +1,152 @@
+2016-07-14 18:05:05,523 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0001.sh open
+2016-07-14 18:05:05,524 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0001.sh close
+2016-07-14 18:05:05,524 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0002.sh open
+2016-07-14 18:05:05,525 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0002.sh close
+2016-07-14 18:05:05,525 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0003.sh open
+2016-07-14 18:05:05,525 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0003.sh close
+2016-07-14 18:05:05,526 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0004.sh open
+2016-07-14 18:05:05,526 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0004.sh close
+2016-07-14 18:05:05,526 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0005.sh open
+2016-07-14 18:05:05,526 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0005.sh close
+2016-07-14 18:05:05,527 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0006.sh open
+2016-07-14 18:05:05,527 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0006.sh close
+2016-07-14 18:05:05,527 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0007.sh open
+2016-07-14 18:05:05,528 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0007.sh close
+2016-07-14 18:05:05,528 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0008.sh open
+2016-07-14 18:05:05,529 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0008.sh close
+2016-07-14 18:05:05,530 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0009.sh open
+2016-07-14 18:05:05,530 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0009.sh close
+2016-07-14 18:05:05,531 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0010.sh open
+2016-07-14 18:05:05,532 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0010.sh close
+2016-07-14 18:05:05,532 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.51556.qsub/work_0011.sh open
+2016-07-14 18:05:05,533 - mylogger - INFO - generate shell done
+2016-07-14 18:05:05,535 - mylogger - INFO - modify object status done
+2016-07-14 18:05:06,005 - mylogger - INFO - work_0001 waiting
+2016-07-14 18:05:06,101 - mylogger - INFO - work_0001 waiting
+2016-07-14 18:05:06,135 - mylogger - INFO - work_0001 qsub
+2016-07-14 18:05:06,150 - mylogger - INFO - work_0002 waiting
+2016-07-14 18:05:06,183 - mylogger - INFO - work_0002 waiting
+2016-07-14 18:05:06,212 - mylogger - INFO - work_0002 qsub
+2016-07-14 18:05:06,227 - mylogger - INFO - work_0003 waiting
+2016-07-14 18:05:06,260 - mylogger - INFO - work_0003 waiting
+2016-07-14 18:05:06,288 - mylogger - INFO - work_0003 qsub
+2016-07-14 18:05:06,302 - mylogger - INFO - work_0004 waiting
+2016-07-14 18:05:06,333 - mylogger - INFO - work_0004 waiting
+2016-07-14 18:05:06,361 - mylogger - INFO - work_0004 qsub
+2016-07-14 18:05:06,377 - mylogger - INFO - work_0005 waiting
+2016-07-14 18:10:06,598 - mylogger - INFO - work_0005 waiting
+2016-07-14 18:10:06,665 - mylogger - INFO - work_0005 waiting
+2016-07-14 18:10:06,707 - mylogger - INFO - work_0005 qsub
+2016-07-14 18:10:06,726 - mylogger - INFO - work_0006 waiting
+2016-07-14 18:10:06,788 - mylogger - INFO - work_0006 waiting
+2016-07-14 18:10:06,836 - mylogger - INFO - work_0006 qsub
+2016-07-14 18:10:06,853 - mylogger - INFO - work_0007 waiting
+2016-07-14 18:10:06,921 - mylogger - INFO - work_0007 waiting
+2016-07-14 18:10:06,967 - mylogger - INFO - work_0007 qsub
+2016-07-14 18:10:06,985 - mylogger - INFO - work_0008 waiting
+2016-07-14 18:10:07,050 - mylogger - INFO - work_0008 waiting
+2016-07-14 18:10:07,096 - mylogger - INFO - work_0008 qsub
+2016-07-14 18:10:07,114 - mylogger - INFO - work_0009 waiting
+2016-07-14 18:15:07,381 - mylogger - INFO - work_0009 waiting
+2016-07-14 18:15:07,416 - mylogger - INFO - work_0009 waiting
+2016-07-14 18:15:07,452 - mylogger - INFO - work_0009 qsub
+2016-07-14 18:15:07,468 - mylogger - INFO - work_0010 waiting
+2016-07-14 18:15:07,502 - mylogger - INFO - work_0010 waiting
+2016-07-14 18:15:07,531 - mylogger - INFO - work_0010 qsub
+2016-07-14 18:15:07,546 - mylogger - INFO - work_0011 waiting
+2016-07-14 18:15:07,582 - mylogger - INFO - work_0011 waiting
+2016-07-14 18:15:07,608 - mylogger - INFO - work_0011 qsub
+2016-07-14 18:20:07,708 - mylogger - INFO - ##in work_0011 qsub
+2016-07-14 18:20:07,754 - mylogger - INFO - ##in2 work_0011 finish
+2016-07-14 18:20:07,755 - mylogger - INFO - ##out work_0011 finish
+2016-07-14 18:20:07,755 - mylogger - INFO - finish
+2016-07-14 18:20:07,755 - mylogger - INFO - finish
+2016-07-14 18:20:07,755 - mylogger - INFO - finish
+2016-07-14 18:20:07,755 - mylogger - INFO - finish
+2016-07-14 18:20:07,755 - mylogger - INFO - finish
+2016-07-14 18:20:07,755 - mylogger - INFO - finish
+2016-07-14 18:20:07,755 - mylogger - INFO - finish
+2016-07-14 18:20:07,755 - mylogger - INFO - finish
+2016-07-14 18:20:07,755 - mylogger - INFO - finish
+2016-07-14 18:20:07,756 - mylogger - INFO - finish
+2016-07-14 18:20:07,756 - mylogger - INFO - finish
+2016-07-14 18:20:07,756 - mylogger - INFO - job list : 
+2016-07-14 18:20:07,756 - mylogger - INFO - work_0007	
+2016-07-14 18:20:07,756 - mylogger - INFO - work_0006	
+2016-07-14 18:20:07,756 - mylogger - INFO - work_0005	
+2016-07-14 18:20:07,756 - mylogger - INFO - work_0004	
+2016-07-14 18:20:07,756 - mylogger - INFO - work_0003	
+2016-07-14 18:20:07,756 - mylogger - INFO - work_0002	
+2016-07-14 18:20:07,757 - mylogger - INFO - work_0001	
+2016-07-14 18:20:07,757 - mylogger - INFO - work_0011	
+2016-07-14 18:20:07,757 - mylogger - INFO - work_0010	
+2016-07-14 18:20:07,757 - mylogger - INFO - work_0009	
+2016-07-14 18:20:07,757 - mylogger - INFO - work_0008	
+2016-08-03 18:04:26,097 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0001.sh open
+2016-08-03 18:04:26,098 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0001.sh close
+2016-08-03 18:04:26,098 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0002.sh open
+2016-08-03 18:04:26,099 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0002.sh close
+2016-08-03 18:04:26,099 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0003.sh open
+2016-08-03 18:04:26,100 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0003.sh close
+2016-08-03 18:04:26,100 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0004.sh open
+2016-08-03 18:04:26,101 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0004.sh close
+2016-08-03 18:04:26,101 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0005.sh open
+2016-08-03 18:04:26,102 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0005.sh close
+2016-08-03 18:04:26,102 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0006.sh open
+2016-08-03 18:04:26,102 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0006.sh close
+2016-08-03 18:04:26,103 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0007.sh open
+2016-08-03 18:04:26,103 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0007.sh close
+2016-08-03 18:04:26,104 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0008.sh open
+2016-08-03 18:04:26,104 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0008.sh close
+2016-08-03 18:04:26,105 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0009.sh open
+2016-08-03 18:04:26,105 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0009.sh close
+2016-08-03 18:04:26,106 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0010.sh open
+2016-08-03 18:04:26,106 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0010.sh close
+2016-08-03 18:04:26,107 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79382.qsub/work_0011.sh open
+2016-08-03 18:04:26,107 - mylogger - INFO - generate shell done
+2016-08-03 18:04:26,109 - mylogger - INFO - modify object status done
+2016-08-03 18:04:26,180 - mylogger - INFO - finish work_0004 done
+2016-08-03 18:04:26,180 - mylogger - INFO - finish work_0005 done
+2016-08-03 18:04:26,180 - mylogger - INFO - finish work_0006 done
+2016-08-03 18:04:26,180 - mylogger - INFO - finish work_0007 done
+2016-08-03 18:04:26,180 - mylogger - INFO - finish work_0011 done
+2016-08-03 18:04:26,180 - mylogger - INFO - finish work_0001 done
+2016-08-03 18:04:26,180 - mylogger - INFO - finish work_0002 done
+2016-08-03 18:04:26,180 - mylogger - INFO - finish work_0003 done
+2016-08-03 18:04:26,180 - mylogger - INFO - finish work_0010 done
+2016-08-03 18:04:26,181 - mylogger - INFO - finish work_0008 done
+2016-08-03 18:04:26,181 - mylogger - INFO - finish work_0009 done
+2016-08-03 18:04:59,508 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0001.sh open
+2016-08-03 18:04:59,508 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0001.sh close
+2016-08-03 18:04:59,509 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0002.sh open
+2016-08-03 18:04:59,509 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0002.sh close
+2016-08-03 18:04:59,509 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0003.sh open
+2016-08-03 18:04:59,510 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0003.sh close
+2016-08-03 18:04:59,510 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0004.sh open
+2016-08-03 18:04:59,511 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0004.sh close
+2016-08-03 18:04:59,511 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0005.sh open
+2016-08-03 18:04:59,512 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0005.sh close
+2016-08-03 18:04:59,529 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0006.sh open
+2016-08-03 18:04:59,529 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0006.sh close
+2016-08-03 18:04:59,530 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0007.sh open
+2016-08-03 18:04:59,530 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0007.sh close
+2016-08-03 18:04:59,530 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0008.sh open
+2016-08-03 18:04:59,531 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0008.sh close
+2016-08-03 18:04:59,531 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0009.sh open
+2016-08-03 18:04:59,532 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0009.sh close
+2016-08-03 18:04:59,532 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0010.sh open
+2016-08-03 18:04:59,533 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0010.sh close
+2016-08-03 18:04:59,533 - mylogger - INFO - /annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5.7/src/test.sh.79778.qsub/work_0011.sh open
+2016-08-03 18:04:59,534 - mylogger - INFO - generate shell done
+2016-08-03 18:04:59,535 - mylogger - INFO - modify object status done
+2016-08-03 18:04:59,573 - mylogger - INFO - finish work_0011 done
+2016-08-03 18:04:59,574 - mylogger - INFO - finish work_0010 done
+2016-08-03 18:04:59,574 - mylogger - INFO - finish work_0008 done
+2016-08-03 18:04:59,574 - mylogger - INFO - finish work_0009 done
+2016-08-03 18:04:59,574 - mylogger - INFO - finish work_0004 done
+2016-08-03 18:04:59,574 - mylogger - INFO - finish work_0005 done
+2016-08-03 18:04:59,574 - mylogger - INFO - finish work_0006 done
+2016-08-03 18:04:59,574 - mylogger - INFO - finish work_0007 done
+2016-08-03 18:04:59,574 - mylogger - INFO - finish work_0001 done
+2016-08-03 18:04:59,574 - mylogger - INFO - finish work_0002 done
+2016-08-03 18:04:59,574 - mylogger - INFO - finish work_0003 done

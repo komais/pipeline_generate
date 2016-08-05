@@ -19,6 +19,12 @@
 1. 修改了du 无响应的返回值，返回为[]， 不退出程序
 2. 降低了qhost的频率
 3. 降低了qstat -j 的频率
+2016年7月14日：
+1. 修复了任务数太多，无法投递上去的bug。如果太多，会等待可以投递的时候再投递。
+2016年7月29日：
+1. 修复了qstat过多，对系统造成的负载。增加了qstat无响应，等待5min，重复10次；并且每次qstat后，sleep 5s，减少负载。
+2016年8月1日
+1. 修复了任务运行过快，导致了qstat时存在，但qstat -j却不存在的bug
 '''
 import argparse
 import sys
@@ -48,18 +54,28 @@ def mylogger(script):
 	logger.addHandler(fh)
 	return logger
 
-def popen(cmd):
-	child = subprocess.Popen(cmd , shell=True , stdout = subprocess.PIPE)
-	child.wait()
-	if child.poll() == 0 :
-		return [i.decode() for i in child.stdout]
-	else:
-		print('{0} is error\n'.format(cmd))
-		debug_log.info('{0} is error\n'.format(cmd))
-		if cmd.find('du') > -1 :
-			return ['0']
+def popen(cmd , max_count = 10 ):
+	count = 0 
+	while count < max_count :
+		child = subprocess.Popen(cmd , shell=True , stdout = subprocess.PIPE)
+		child.wait()
+		if child.poll() == 0 :
+			return [i.decode() for i in child.stdout]
 		else:
-			sys.exit(1)
+			print('{0} is error\n'.format(cmd))
+			debug_log.info('{0} failed , repeat {1} time'.format(cmd , count ))
+			if cmd.find('du') > -1 :
+				return ['0']
+			elif cmd.startswith('qstat -j'):
+				return 'qstat failed'
+			else:
+				pass
+		count += 1 
+		time.sleep(300)
+	else :
+		debug_log.info('{0} is error\n'.format(cmd))
+		sys.exit(1)
+		
 
 class Job():
 	def __init__(self , script, key , name ,max_cycle ):
@@ -81,17 +97,26 @@ class Job():
 		self.queue = queue
 		self.max_cycle = max_cycle
 		self.resource = resource
-	def qsub(self):
+	def qsub(self, f_out):
+		count = 0 
 		cmd = 'cd {1} && qsub -cwd -S /bin/sh -q {0.queue} -l {0.resource} {0.script}'.format(self , os.path.abspath(os.path.dirname(self.script)))
-		#print(cmd)
-		qsub = "".join(popen(cmd))
-		if qsub.startswith('Your job'):
-			self.jobid = qsub.split()[2]
-			self.status = 'qsub'
-			self.time_qsub = time.time()
-			self.qsub_time += 1 
+		while count <= 10 : 
+			#print(cmd)
+			qsub = "".join(popen(cmd))
+			if qsub.startswith('Your job'):
+				self.jobid = qsub.split()[2]
+				self.status = 'qsub'
+				self.time_qsub = time.time()
+				self.qsub_time += 1
+				return 0 
+			elif qsub.startswith('Unable to run job'):
+				time.sleep(300)
+			else:
+				time.sleep(300)
+				count += 1
 		else:
-			pass
+			f_out.write("qsub failed:{0}\n".format(cmd))
+			sys.exit(1)
 	def qsub_to_run(self):
 		self.time_last = time.time()
 		self.status = 'running'
@@ -118,14 +143,19 @@ class Job():
 			self.status = 'break'
 	def qstat(self):
 		cmd = 'qstat -j {0.jobid}'.format(self)
-		for i in popen(cmd):
-			if i.startswith('usage'):
-				tmp = i.rstrip().split(':' , 1 )[1]
-				tmp = tmp.split(',')
-				self.cputime_current = self.to_second(tmp[0].split('=')[1])
-				self.io.append(tmp[2].split('=')[1])
-				self.vmem.append( self.transfer(tmp[3].split('=')[1]) )
-				self.maxmem = self.get_maxmem( self.transfer( tmp[4].split('=')[1] ))
+		tt = popen(cmd)
+		if tt == 'qstat failed':
+			return False
+		else:
+			for i in popen(cmd):
+				if i.startswith('usage'):
+					tmp = i.rstrip().split(':' , 1 )[1]
+					tmp = tmp.split(',')
+					self.cputime_current = self.to_second(tmp[0].split('=')[1])
+					self.io.append(tmp[2].split('=')[1])
+					self.vmem.append( self.transfer(tmp[3].split('=')[1]) )
+					self.maxmem = self.get_maxmem( self.transfer( tmp[4].split('=')[1] ))
+			return True
 	
 	def to_second(self, cputime):
 		tmp = [ int(i) for i in cputime.split(':') ] 
@@ -157,7 +187,8 @@ class Job():
 		if  self.counter_qstat > 1 and self.counter_qstat % 3 != 0 : 
 			return False
 		self.time_current = time.time()
-		self.qstat()
+		if not self.qstat():
+			return False
 		hold_time = int(self.qrls_time - self.qhold_time)
 		if self.status == 'running' :
 			if self.time_last == '':
@@ -220,7 +251,7 @@ def generate_split_shell(shell , line_interval , job_prefix, max_cycle):
 			content = content.rstrip(';')
 			while(pat.search(content)):
 				content = pat.sub(';',content)
-			shell_out.write('{0} && '.format(content))
+			shell_out.write('{0} &&\\\n'.format(content))
 		else:
 			shell_out.write('echo This-Work-is-Completed!\n')
 			shell_out.close()
@@ -295,6 +326,7 @@ def check_o_file(a_job):
 def check_running_job(all_job_list , bool_dir_full ):
 	die_node = check_die_node()
 	qstat = popen('qstat')
+	#time.sleep(5)
 	running_stat = {}
 	node_dict = {}
 	for i,j  in enumerate(qstat):
@@ -423,14 +455,14 @@ def guard_objs(obj_dict , args ,logfile):
 				else:
 					if a_job.status == 'waiting':
 						debug_log.info('{0.name} {0.status}'.format(a_job))
-						a_job.qsub()
+						a_job.qsub(logfile)
 						debug_log.info('{0.name} {0.status}'.format(a_job))
 					if a_job.status == 'break':
 						with open(logfile, 'a') as f_out:
 							f_out.write('{0.name} is not finish , it is break down , '.format(a_job))
 							if not args.noreqsub:
 								if a_job.qsub_time < a_job.max_cycle:
-									a_job.qsub()
+									a_job.qsub(logfile)
 									f_out.write('reqsub it at the {0.qsub_time} time\n'.format(a_job))
 								else:
 									a_job.status = 'failed'

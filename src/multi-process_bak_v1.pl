@@ -14,8 +14,6 @@
 
 use strict;
 use Getopt::Long;
-use Data::Dumper;
-
 
 my $program_name=$1 if($0=~/([^\/]+)$/);
 my $usage=<<USAGE; #******* Instruction of this program *********# 
@@ -45,9 +43,6 @@ my $owner = `whoami`;
 
 my $work_shell = $ARGV[0];
 my $work_shell_file_error = $work_shell.".$$.log";
-my $work_shell_dir = $work_shell.".$$.shell";
-`mkdir -p $work_shell_dir` unless ( -d $work_shell_dir);
-
 open IN, $work_shell ||die "cannot open $work_shell\n";
 my @cmd;
 my $line_mark = 0;
@@ -67,16 +62,6 @@ while (<>) {
 }
 close IN;
 
-my @cmd2 ; 
-my $count = "00000" ; 
-foreach my$i(@cmd){
-	$count ++ ;
-	open OUT,">$work_shell_dir/work_$count.sh"||die "cannot open $work_shell_dir/work_$count.sh";
-	print OUT "$i echo This-Work-is-Completed!\n" ;
-	close OUT ;
-	push @cmd2 , "$work_shell_dir/work_$count.sh" ;
-}
-
 if(exists $opts{cmd}){
 	foreach  (@cmd) {
 		print $_."\n";
@@ -84,7 +69,7 @@ if(exists $opts{cmd}){
 	exit;
 }
 
-Multiprocess(\@cmd2, $work_shell_file_error , $opts{cpu}  );
+Multiprocess(\@cmd, $work_shell_file_error , $opts{cpu}  );
 
 
 
@@ -115,7 +100,7 @@ sub Multiprocess{
 		if ( fork() ) { 
 			wait if($i+1 >= $max_cpu); ## wait unitl all the child processes finished
 		}else{          
-			if ( system ( "sh $cmd 1>$cmd.o 2>$cmd.e")){
+			if ( system ( $cmd )){
 			}else{
 				print WRITE "finish\t" ;
 			}

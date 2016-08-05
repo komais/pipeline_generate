@@ -9,7 +9,7 @@ home_dir =  os.environ['HOME']
 __author__='Liu Tao'
 __mail__= 'taoliu@annoroad.com'
 
-pat1=re.compile('^\s+$')
+pat1=re.compile('^\s*$')
 
 def searchDir(indir):
 	all_shell = glob.glob('{0}/*.sh'.format(indir))
@@ -35,7 +35,7 @@ def searchDir(indir):
 def readTotalLog(logfile , job_tree):
 	with open(logfile) as f_log:
 		for line in f_log:
-			if line.startswith('#'):continue
+			if line.startswith('#') or re.search(pat1,line):continue
 			job_name = line.split()[1]
 			tmp = job_name.split('_')
 			level1 , level2 = int(tmp[0]) , int(tmp[1])

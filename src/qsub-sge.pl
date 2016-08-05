@@ -148,7 +148,7 @@ GetOptions(
 	"help"=>\$Help
 );
 $Queue ||= "sci.q";
-$Interval ||= 200;
+$Interval ||= 300;
 $Lines ||= 1;
 $Maxjob ||= 30;
 $Convert ||= 'yes';
@@ -184,10 +184,8 @@ my $Job_mark="00000";
 mkdir($Work_dir);
 my @Shell;  ## store the file names of qsub sell
 open IN, $work_shell_file_globle || die "fail open $work_shell_file_globle";
-my %finish_blocks; ##### store finish jobs , and not running this jobs  00001 ==> 1 
-
+my %finish_blocks; ##### store finish jobs , and not running this jobs
 readPreLogs($work_shell_file , \%finish_blocks ) if (defined $Continue); ## read log file and store finish job 
-
 ##### read shell file and split it  
 while(<IN>){
 	chomp;
@@ -230,7 +228,7 @@ print STDERR "make the qsub shell files done\n" if($Verbose);
 my $qsub_cycle = 1;
 my %stat_p;
 my $total_job_number = @Shell;
-my %all_cycle_job ;  ### jobid ==> RD0208-3MergeFq_00110.sh 
+my %all_cycle_job ; 
 
 open OUT, ">>$work_shell_file_error" || die "fail create $$work_shell_file_error";
 
@@ -264,7 +262,6 @@ while (@Shell) {
 	my $finish_num = 0 ;
 	my $flag_hold_output = 0 ; 
 	my $flag_is_too_full = 0 ; 
-	### first , qsub all job on node in the first round
 	for (my $i=0; $i<@Shell; $i++) {
 		while (1) {
 			$quota = readPreLogs($work_shell_file , 0 , $quota);
@@ -281,7 +278,7 @@ while (@Shell) {
 				$flag_hold_output = 0 ; 
 			}
 			my $run_num = run_count(\%Alljob,\%Runjob, \%stat_p , $flag_is_too_full); ## store job information in stat_p ; 
-			my $tmp_finish_num = finishJob(\%all_cycle_job , \%finish_blocks , $job_cmd , $max_cycle); ## include finish and break job
+			my $tmp_finish_num = finishJob(\%all_cycle_job , \%finish_blocks );
 			#print "$tmp_finish_num\n";
 			if ($tmp_finish_num == -1 ){
 				sleep $Interval;
@@ -320,7 +317,7 @@ while (@Shell) {
 			 $flag_is_too_full = is_too_full($quota , $Analysis_dir) ;
 		}
 		my $run_num = run_count(\%Alljob,\%Runjob,\%stat_p,$flag_is_too_full);
-		my $tmp_finish_num = finishJob(\%all_cycle_job , \%finish_blocks, $job_cmd , $max_cycle , $Work_dir, $current_dir );
+		my $tmp_finish_num = finishJob(\%all_cycle_job , \%finish_blocks, $Work_dir, $current_dir );
 		#print Dumper \%stat_p;
 		#print "$tmp_finish_num\t$finish_num/$total_job_number\n";
 		#print Dumper \%finish_blocks;
@@ -346,7 +343,7 @@ while (@Shell) {
 	#print "sleep 20 seconds\n";
 	sleep 20;
 	#print "sleep 20 seconds\n";
-	my $tmp_finish_num = finishJob(\%all_cycle_job , \%finish_blocks , $job_cmd , $max_cycle,  $Work_dir, $current_dir );
+	my $tmp_finish_num = finishJob(\%all_cycle_job , \%finish_blocks ,  $Work_dir, $current_dir );
 	#print "$tmp_finish_num\t$finish_num/$total_job_number\n";
 	if ($tmp_finish_num == -1 ){
 		sleep $Interval;
@@ -377,6 +374,32 @@ while (@Shell) {
 			print OUT "In qsub cycle $qsub_cycle, In $shell_file.o$job_id,  \"This-Work-is-Completed!\" is not found, so this work may be unfinished\n";
 		}
 		
+
+		##read the .e file
+		my $content;
+		if (-f "$shell_file.e$job_id") {
+			open IN,"$shell_file.e$job_id" || warn "fail $shell_file.e$job_id";
+			$content = join("",<IN>);
+			close IN;
+		}
+		##check whether the C/C++ libary is in good state
+		if ($content =~ /GLIBCXX_3.4.9/ && $content =~ /not found/) {
+			$Error{$job_id} = $shell_file;
+			print OUT "In qsub cycle $qsub_cycle, In $shell_file.e$job_id,  GLIBCXX_3.4.9 not found, so this work may be unfinished\n";
+		}
+
+		##check whether iprscan is in good state
+		if ($content =~ /iprscan: failed/) {
+			$Error{$job_id} = $shell_file;
+			print OUT "In qsub cycle $qsub_cycle, In $shell_file.e$job_id, iprscan: failed , so this work may be unfinished\n";
+		}
+		
+		##check the user defined job completion mark
+		if (defined $Secure && $content !~ /$Secure/) {
+			$Error{$job_id} = $shell_file;
+			print OUT "In qsub cycle $qsub_cycle, In $shell_file.o$job_id,  \"$Secure\" is not found, so this work may be unfinished\n";
+		}
+	}
 
 	##make @shell for next cycle, which contains unfinished tasks
 	@Shell = ();
@@ -593,15 +616,11 @@ sub mean_mem{
 sub finishJob{
 	my $all_p = shift;
 	my $finish_job_id = shift;
-	my $count_shell = shift;
-	my $job_cmd =shift ;
-	my $$max_cycle = shift;
 	my $Work_dir = shift;
 	my $current_dir = shift;
 	
 	#my %finish_job_id = %$finish_job_id;
-	my %Alljob=%$all_p;
-	my %ShellCount = %$count_shell; 
+	my%Alljob=%$all_p;
 	my$finish_num = 0;
 
 	my $user = `whoami`; chomp $user;
@@ -620,15 +639,6 @@ sub finishJob{
 			$finish_num ++;
 			#print "$1\n";
 			$finish_job_id -> {$1}  = 1;
-		}else{
-			if ($ShellCount[$shell_file] <= $max_cycle){
-				my $jod_return = `$job_cmd $shell_file`;
-				my $new_job_id = $1 if($jod_return =~ /Your job (\d+)/);
-				$ShellCount[$shell_file] += 1 ;
-				print STDERR "reqsub $new_job_id for $job_id  in the $qsub_cycle cycle\n" if($Verbose);
-			}else{
-
-			}
 		}
 	}
 	chdir($current_dir)  if($current_dir); 

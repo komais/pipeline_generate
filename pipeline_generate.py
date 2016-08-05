@@ -37,6 +37,7 @@ Order   1
 Thread	5
 Qsub	False
 Node	c0008
+Depend	Map
 Command make -f BIN/MergeFq/makefile indir=$(sample)[5]/$(sample)[1] outdir=OUTDIR sample_id=$(sample)[0] log_file=LOGFILE LinkFqPara_seq
 [Job End]
 	上面这个任务处于第一层，major是T，表明要运行第二层任务，必须需要这个任务完成。
@@ -59,8 +60,11 @@ Command make -f BIN/MergeFq/makefile indir=$(sample)[5]/$(sample)[1] outdir=OUTD
 	* 将args.bin的绝对路径作为一个值保存下来，存在log.txt中，以便后续查询。
 	2016年4月10日 v5.7
 	* 添加了Node参数，在非qsub的情况下，可以将任务投递到Node设定的节点后台运行。
+	* 修改了multiple-process.pl,修改为qsub-sge类似的功能，生成新文件，然后将输出分别定向到.e 和 .o 文件，同时顺手修改了脚本中的分隔符，改成 &&
+	2016年8月5日 v6.2
+	* 添加了Depend参数，可以更加自由的设置任务的前置任务，可以更加灵活控制任务进程。同时保留了层级结构，便于理解。但是要求name是唯一的。
 To Be Done:
-	* 没想到 
+	* 增加了对配置文件Name检查功能，防止depend指代不明。 
 '''
 # -*- coding: utf-8 -*-  
 import argparse
@@ -92,6 +96,7 @@ class Job:
 		self.Thread = 1
 		self.Qsub = True
 		self.Node = ''
+		self.Depend = []
 	def addAtribute(self , key, value):
 		if key in ['Name','Memory','Time','CPU','Export','Command','Part','Order','Queue' , 'Thread' , 'Qsub' , 'Node' ]:
 			self.__dict__[key] = value
@@ -102,6 +107,8 @@ class Job:
 				self.__dict__[key] = 'False'
 			else:
 				print('Major	{0} is error,set True'.format(value))
+		elif key == 'Depend':
+			self.Depend = value.split(';')
 		else:
 			print('{0} is useless'.format(key))
 	def format_command(self):
@@ -165,6 +172,7 @@ def ParseOneJob(content):
 
 def ReadJob(f_file):
 	content = []
+	names = []
 	job_list = {}
 	for line in f_file:
 		if line.startswith('#') or re.search(pat1,line):continue
@@ -173,6 +181,11 @@ def ReadJob(f_file):
 			content = []
 		elif line.startswith(r'[Job End]'):
 			a_job = ParseOneJob(content)
+			if a_job.name not in names:
+				names.append(a_job.name)
+			else:
+				print("{0} is repeat , pls use the other name".format(a_job.name))
+				sys.exit()
 			order = int(a_job.Order)
 			if not order in job_list:
 				job_list[order] = []
@@ -298,7 +311,8 @@ def main():
 	log = open(logfile,'a')
 	log.write('#pipeline version : {0}\\n'.format(BIN))
 	guard_script = '{0}/guard.py'.format(shell_dir)
-	job_list = {} 
+	job_list = {}
+	all_job_list = {}
 '''
 
 	for order in sorted(jobs):
@@ -320,10 +334,14 @@ def main():
 			a_cmd = 'ssh {1.Node} 2> /dev/null "perl {{1}}/src/multi-process.pl -cpu {{2}} --lines {2[0]} {{0}}"'.format(shsh , bindir, cpu)
 	else:
 		a_cmd = '/annoroad/share/software/install/Python-3.3.2/bin/python3 {{1}}/src/qsub_sge.py --resource "p={1.Thread} -l vf={1.Memory}" --maxjob {{2}}  --lines {2[0]} --jobprefix {{3}}{1.name}  {{5}} --queue {{4}} {{0}}'.format(shsh , bindir, cpu , args.jobid , queue , job_not_continue)
-	a_thread = JobGuard.MyThread('{0}_{1.name}' , log , a_cmd, {1.Major})
+	if len( {1.Depend} ) == 0 : 
+		a_thread = JobGuard.MyThread('{0}_{1.name}' , log , a_cmd, {1.Major})
+	else : 
+		a_thread = JobGuard.MyThread('{0}_{1.name}' , log , a_cmd, {1.Major} , [ all_job_list[i] for i in {1.Depend} ])
+	all_job_list[ '{1.name}' ] = a_thread
 	if not int({3}) in job_list: job_list[int({3})] = []
 	job_list[int({3})].append(a_thread)
-'''.format(index ,  a_job , a_job.format_command() , order)
+'''.format(index ,  a_job , a_job.format_command() , order )
 			else:
 				#print(a_job.name)
 				script += '''
@@ -347,7 +365,11 @@ def main():
 				a_cmd = 'ssh {1.Node} 2> /dev/null "perl {{1}}/src/multi-process.pl -cpu {{2}} --lines {2[0]} {{0}}"'.format(shsh , bindir, cpu)
 		else:
 			a_cmd = '/annoroad/share/software/install/Python-3.3.2/bin/python3  {{1}}/src/qsub_sge.py --resource "p={1.Thread} -l vf={1.Memory}" --maxjob {{2}} --lines {2[0]} --maxcycle 5 --quota {{6}}  --jobprefix {{3}}{1.name}  {{5}} --queue {{4}} {{0}}'.format(shsh ,bindir, cpu, args.jobid , queue , job_not_continue , args.quota)
-		a_thread = JobGuard.MyThread('{0}_{1.name}' , log , a_cmd, {1.Major})
+		if len( {1.Depend} ) == 0 : 
+			a_thread = JobGuard.MyThread('{0}_{1.name}' , log , a_cmd, {1.Major})
+		else : 
+			a_thread = JobGuard.MyThread('{0}_{1.name}' , log , a_cmd, {1.Major} , [ all_job_list[ i ] for i in {1.Depend} ])
+		all_job_list[ '{1.name}' ] = a_thread
 		if not int({3}) in job_list: job_list[int({3})] = []
 		job_list[int({3})].append(a_thread)
 	else:
