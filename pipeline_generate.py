@@ -29,6 +29,7 @@
 	例如：
 [Job Start]
 Name    MergeFq
+Description	balabala
 Memory  1G
 Queue   sci.q
 CPU     N
@@ -38,6 +39,9 @@ Thread	5
 Qsub	False
 Node	c0008
 Depend	Map
+Input	$(INDIR)/hg19.fa;$(INDIR)/hg19.gff
+Output	$(OUTDIR)/out.fa;$(OUTDIR)/out.bam
+Env	Python3;R-3.3.1(ggplot2)
 Command make -f BIN/MergeFq/makefile indir=$(sample)[5]/$(sample)[1] outdir=OUTDIR sample_id=$(sample)[0] log_file=LOGFILE LinkFqPara_seq
 [Job End]
 	上面这个任务处于第一层，major是T，表明要运行第二层任务，必须需要这个任务完成。
@@ -98,7 +102,8 @@ class Job:
 		self.Node = ''
 		self.Depend = []
 	def addAtribute(self , key, value):
-		if key in ['Name','Memory','Time','CPU','Export','Command','Part','Order','Queue' , 'Thread' , 'Qsub' , 'Node' ]:
+		if key in ['Name','Memory','Time','CPU','Export','Command','Part','Order','Queue' , 
+				    'Thread' , 'Qsub' , 'Node' , 'Description', 'Input' , 'Output' , 'Env']:
 			self.__dict__[key] = value
 		elif key == 'Major':
 			if value == 'T' or value == 'True':
@@ -207,7 +212,6 @@ Parameters:
 	-j,   --jobid: 任务前缀，默认为name
 	-r,   --run  : 是否自动投递任务，默认为不投递任务，但会在${OUTDIR}/shell中生成脚本，可以进行检查
 	-c,   --continue: 在qsub下有效（设置了-r，但不设置-n），如果某一步分析中没有完成全部任务，如果不指定则从头运行该步所有任务，指定则完成该步剩余未完成任务
-	-n,   --nohup : 默认是qsub运行任务，设置则为nohup
 	-a,   --add   : 是否只运行加测的样品，如果指定则只运行加测的样品。
 	-quota, --quota : 分析目录的配额，是之前找文明申请的大小。默认是1000G，请根据实际情况进行调整。
 说明：
@@ -223,7 +227,7 @@ Parameters:
 	A:当某一块出现两次或者多次，那么最后一次出现的内容作为加测项
 
 	Q:如何监控项目运行状态？
-	A:运行/annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/v5/show_process.py会显示项目的状态。项目运行状态分为running, break, plan, end 四种。其中running表示正在运行，break表示中断，plan表示准备运行，end表示运行完成,hold表示磁盘不够，任务挂起。
+	A:运行/annoroad/bioinfo/PMO/liutao/pipeline_generate/bin/current/show_process.py会显示项目的状态。项目运行状态分为running, break, plan, end 四种。其中running表示正在运行，break表示中断，plan表示准备运行，end表示运行完成,hold表示磁盘不够，任务挂起。
 
 	Q: 发现任务状态是break，该咋办？
 	A: 当发现任务状态是break的时候，首先需要确定break掉的任务是否是主线任务。
@@ -235,16 +239,21 @@ Parameters:
 
 	Q:监控项目的记录文件在哪？
 	A:程序会在您的home目录下，生成一个记录文件，路径为~/.mission/.pipeline.log，记录了每个项目的分析目录。如果不想显示某个项目，可以对相应的行进行删除或者编辑。
+
 	Q:如果程序断了，咋办？
 	A:如果程序由于各种因素中断了，仔细检查脚本，如果脚本没错，确定只是中断，那么重新运行一次之前的脚本，默认会把断掉的模块全部重头运行；如果不想将该模块内已经完成的样品重新运行，可以加上-c参数，那么会只运行没有运行成功的样品。
+
 	Q:如何发现配额不够？
 	A:如果配额不够了，会把所有的任务挂起，使用show_process查看时，会发现Hold状态；或者使用qstat的时候，会发现hqw，hr，ht等，或者没有任务在运行（因为配额不够，程序会自动不投递任务）
+
 	Q: 配额不够了，咋办？
 	A: 第一，找文明修改配额 ； 第二，修改相应的sh.*.log文件，加入一行DISK_QUOTA\t**G ;之后，程序会自动的release。但需要注意的是，因为之前在程序里设置了较小的配额，所以之后每一步都会被hold。所以需要之后每个log文件都加上 DISK_QUOTA\t**G，来每次进行更改；或者杀掉重新来。 
 	   或者删除文件来释放空间，这样的话，后面可以不用修改就可以运行。
+
 	Q: 如何杀掉程序？
 	A: 1. 杀掉所有的子进程 守护进程qsub_sge.pl，否则的杀掉的任务会重新投递；
 	   2. 杀掉所有的任务 qdel掉
+
 	Q: 如何精准的杀掉守护进程？
 	A: 1. 在重新投递之前，使用ps -f -u name |cat 然后仔细的判别，获得进程ID
 	   2. 查看shell后面的数字，在sh 和log直接的数字，是进程ID，使用kill -9可以杀掉

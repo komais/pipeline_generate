@@ -14,6 +14,8 @@
 
 use strict;
 use Getopt::Long;
+use Data::Dumper;
+
 
 my $program_name=$1 if($0=~/([^\/]+)$/);
 my $usage=<<USAGE; #******* Instruction of this program *********# 
@@ -43,6 +45,9 @@ my $owner = `whoami`;
 
 my $work_shell = $ARGV[0];
 my $work_shell_file_error = $work_shell.".$$.log";
+my $work_shell_dir = $work_shell.".$$.shell";
+`mkdir -p $work_shell_dir` unless ( -d $work_shell_dir);
+
 open IN, $work_shell ||die "cannot open $work_shell\n";
 my @cmd;
 my $line_mark = 0;
@@ -54,13 +59,23 @@ while (<>) {
 	if ($line_mark % $Lines == 0) {
 		$single_cmd = ""
 	}
-	$single_cmd .= "$_ ; ";
+	$single_cmd .= "$_ &&  ";
 	if ($line_mark % $Lines == $Lines - 1) {
 		push @cmd, $single_cmd;
 	}
 	$line_mark++;
 }
 close IN;
+
+my @cmd2 ; 
+my $count = "00000" ; 
+foreach my$i(@cmd){
+	$count ++ ;
+	open OUT,">$work_shell_dir/work_$count.sh"||die "cannot open $work_shell_dir/work_$count.sh";
+	print OUT "$i echo This-Work-is-Completed!\n" ;
+	close OUT ;
+	push @cmd2 , "$work_shell_dir/work_$count.sh" ;
+}
 
 if(exists $opts{cmd}){
 	foreach  (@cmd) {
@@ -69,7 +84,7 @@ if(exists $opts{cmd}){
 	exit;
 }
 
-Multiprocess(\@cmd, $work_shell_file_error , $opts{cpu}  );
+Multiprocess(\@cmd2, $work_shell_file_error , $opts{cpu}  );
 
 
 
@@ -92,24 +107,34 @@ sub Multiprocess{
 	for (my $i=1; $i<=10; $i++) {
 		$report{int $total/10*$i}=$i*10;
 	}
-	
+	my $unfinish_flag = 0; 
+	pipe(READ, WRITE); 
 	for (my $i=0; $i<$total; $i++) {
 		printf STDERR ("\tthrow out  %d\%\n",$report{$i+1}) if (exists $opts{verbose} && exists $report{$i+1});
 		my $cmd=$$cmd_ap[$i];
 		if ( fork() ) { 
 			wait if($i+1 >= $max_cpu); ## wait unitl all the child processes finished
-			$finish_num ++ ; 
-			print "$finish_num\n";
-			print LOG "[Process]: $finish_num/$total finished\n";
 		}else{          
-			exec $cmd;  #child process
-			#$finish_num ++ ; 
-			exit();     #child process
+			if ( system ( "sh $cmd 1>$cmd.o 2>$cmd.e")){
+				print LOG "[Process]: $finish_num/$total failed\n";
+			}else{
+				print WRITE "finish\t" ;
+			}
+			exit;     #child process
 		}
 		sleep 1;
 	}
+	while (wait != -1) { sleep 100; }
+	close WRITE;
+	$unfinish_flag = <READ>;
+	$finish_num += scalar(split(/\s+/, $unfinish_flag) );
+	print LOG "[Process]: $finish_num/$total finished\n";
 	close LOG;
-	while (wait != -1) { sleep 1; }
-
-	print STDERR "\tAll tasks done\n" if ( exists $opts{verbose} );
+	close READ; 
+	if ( $finish_num == $total  ){
+		print STDERR "\tAll tasks done\n" if ( exists $opts{verbose} );
+	}else {
+		print STDERR " some script was break\n";
+		die;
+	}
 }

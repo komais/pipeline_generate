@@ -12,6 +12,9 @@
 ## 本程序的核心想法来源于李俊。
 ## 注意调用fork的时候非常危险，请万勿随意修改，本程序曾把北京的大型机搞死过两次。
 
+## log
+# 1. add renohup function 
+#
 use strict;
 use Getopt::Long;
 use Data::Dumper;
@@ -114,16 +117,22 @@ sub Multiprocess{
 		my $cmd=$$cmd_ap[$i];
 		if ( fork() ) { 
 			wait if($i+1 >= $max_cpu); ## wait unitl all the child processes finished
-		}else{          
-			if ( system ( "sh $cmd 1>$cmd.o 2>$cmd.e")){
-			}else{
-				print WRITE "finish\t" ;
+		}else{
+			my $count = 0 ;
+			while ($count < 5){
+				if ( system ( "sh $cmd 1>$cmd.o 2>$cmd.e")){
+					$count ++ ; 
+					print LOG "[Process]: $finish_num/$total failed , repeat $count time\n";
+				}else{
+					print WRITE "finish\t" ;
+					$count = 10 ;
+				}
 			}
 			exit;     #child process
 		}
 		sleep 1;
 	}
-	while (wait != -1) { sleep 100; }
+	while (wait != -1) { sleep 1; }
 	close WRITE;
 	$unfinish_flag = <READ>;
 	$finish_num += scalar(split(/\s+/, $unfinish_flag) );
